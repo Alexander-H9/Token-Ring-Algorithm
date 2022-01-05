@@ -41,7 +41,7 @@ class Node:
         """
         # exclude, that more then one process gets killed
         if sum(inactive) < 3:
-            if random.randint(0, 30) < 1:
+            if random.randint(0, 35) < 1:
                 inactive[self.number] = 1
                 print("Process", self.number, f" {bcolors.WARNING}was killed{bcolors.ENDC}")
 
@@ -68,6 +68,7 @@ class Node:
                         print("Process ", self.number, f" {bcolors.OKGREEN}has closed the ring and points now to {bcolors.ENDC}", self.nextNode)
                         token.value = self.nextNode
                         self.ringOpen = 0
+                        drawRing(token, inactive)
                         return True
 
 
@@ -78,10 +79,11 @@ class Node:
                         print("Process ", self.number, f" {bcolors.OKGREEN}has closed the ring and points now to {bcolors.ENDC}", self.nextNode)
                         token.value = self.nextNode
                     self.ringOpen = 0
+                    drawRing(token, inactive)
                     return True
         
         self.ringOpen = 0
-                
+
 
     def activity(self, token, inactive):
         """
@@ -133,7 +135,21 @@ class Node:
                     print("No more Nodes left: Process ", self.number, " leaves the ring")
                     break
         
-            
+def drawRing(token, inactive):
+
+    draw = ""
+
+    for idx,process in enumerate(inactive):
+        if process == 0:
+            draw += str(idx) + " -> "
+
+    # close the ring, so the last element points to the first 
+    for idx,process in enumerate(inactive):
+        if process == 0:
+            draw += str(idx)
+            break
+
+    print(f"{bcolors.HEADER}Ring: {bcolors.ENDC}", draw)
 
 
 f = open("log.txt", "w")
@@ -143,7 +159,7 @@ f.close()
 if __name__ == "__main__":
 
     n = []
-    for element in range(4):
+    for element in range(5):
         node = Node(element)
         n.append(node)
 
@@ -165,6 +181,9 @@ if __name__ == "__main__":
 
     for pr in processes:
         pr.start()
+    
+    # show the full ring
+    drawRing(token, inactive)
 
     for pr in processes:
         pr.join()
