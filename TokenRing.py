@@ -1,7 +1,6 @@
 import random
 import time
 import multiprocessing
-# https://www.geeksforgeeks.org/multiprocessing-python-set-2/
 
 class bcolors:
     HEADER = '\033[95m'
@@ -41,8 +40,8 @@ class Node:
         simulate the chance to kill a process
         """
         # exclude, that more then one process gets killed
-        if sum(inactive) < 5:   # number of possible crashes
-            if random.randint(0, 55) < 1:   # propability of a crash
+        if sum(inactive) < 1:
+            if random.randint(0, 65) < 1:
                 inactive[self.number] = 1
                 print("Process", self.number, f" {bcolors.WARNING}was killed{bcolors.ENDC}")
                 return True
@@ -59,9 +58,9 @@ class Node:
         if inactive[self.nextNode] == 1:
             # idx starts at the position of the node.number
             for idx,nodes in enumerate(inactive, self.number):
-                # if process is at last position, go to the start of the array and find the first active process
+                # if process is at last position, go to the start of the array
                 if idx == len(inactive)-1:
-                    print("idx at last position, change idx to first active process")
+                    print("idx at last position, change idx to first position")
                     idx = 0
                     # if the start is active
                     if inactive[idx] == 0:
@@ -72,6 +71,7 @@ class Node:
                         self.ringOpen = 0
                         drawRing(token, inactive)
                         return True
+
 
                 # if active node was found, set it as new neighbour
                 if inactive[idx+1] == 0:
@@ -94,7 +94,7 @@ class Node:
         self.setNeighbour(inactive)
 
         while True:
-            time.sleep(0.5)
+            time.sleep(1.5)
 
             # check if process is still active. idx of process is its number - 1 
             if inactive[self.number] == 1:
@@ -125,9 +125,10 @@ class Node:
             # simulate a dead process
             if self.simulateCrash(inactive) == True:
                 break
+            
 
             # check if token disapeard, triggers if token stays away for 10 seconds. Warning: large rings need more time
-            if (self.tokenArrived + 5) < time.clock():     # timeout duration
+            if (self.tokenArrived + 10) < time.clock():
                 self.ringOpen = 1
 
             # check if the ring is open
